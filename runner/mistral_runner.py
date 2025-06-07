@@ -1,6 +1,7 @@
-import re
 import copy
 import json
+import re
+
 from models.mistral import MistralModel
 from runner.base_runner import ModelRunner
 

@@ -1,6 +1,7 @@
-import re
 import copy
 import json
+import re
+
 from models.glm import GLMAPIModel, GLMVllmModel
 from runner.base_runner import ModelRunner
 

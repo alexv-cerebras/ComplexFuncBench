@@ -1,10 +1,11 @@
-from typing import Any, Dict
-import os
-from openai import OpenAI
-import json
-import sys
 import copy
+import json
 import os
+import sys
+from typing import Any, Dict
+
+from openai import OpenAI
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from prompts.prompts import SimpleTemplatePrompt

@@ -1,19 +1,20 @@
-import json
 import copy
-from utils.utils import *
-from models.gpt import GPTModel
+import json
 
+from models.gpt import GPTModel
 from prompts.response import (
-    complete_system_prompt, 
-    complete_user_prompt, 
-    correct_system_prompt, 
-    correct_user_prompt
+    complete_system_prompt,
+    complete_user_prompt,
+    correct_system_prompt,
+    correct_user_prompt,
 )
+from utils.utils import *
+
 
 class RespEvalRunner:
-    def __init__(self, args, logger):
+    def __init__(self, model_name, logger, api_key=None, base_url=None):
         self.logger = logger
-        self.model = GPTModel("gpt-4o-2024-08-06")
+        self.model = GPTModel(model_name, api_key=api_key, base_url=base_url)
 
     @retry(max_attempts=10)
     def completeness_eval(self, **kwargs):

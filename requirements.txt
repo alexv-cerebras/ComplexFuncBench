@@ -7,3 +7,4 @@ Requests
 scipy
 FlagEmbedding
 torch==2.3.0
+sentence-transformers

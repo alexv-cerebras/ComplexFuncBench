@@ -3,13 +3,13 @@ import copy
 from utils.compare_method import CompareFC
 
 class ModelRunner:
-    def __init__(self, args, logger):
+    def __init__(self, model_name, logger, api_key=None, base_url=None, hf_token=None):
         self.logger = logger
         
         self.error_message = None
         self.unexpect_call_resp = {"api_status": True, "content": "There is a problem with your api call, please double-check for possible problems."}
     
-        self.CompareClass = CompareFC(args, logger)
+        self.CompareClass = CompareFC(model_name, logger, api_key, base_url, hf_token)
         self.free_function_list = self.CompareClass.free_function_list
 
     def only_free_function(self, temp_fcs):

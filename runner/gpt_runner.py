@@ -1,15 +1,34 @@
-import re
 import copy
 import json
+import re
+
 from models.gpt import FunctionCallGPT
 from runner.base_runner import ModelRunner
 
 
+def post_process_optional_params(args_str: str) -> str:
+    """Remove null/None values from function arguments."""
+    try:
+        if isinstance(args_str, dict):
+            args_dict = args_str
+        else:
+            args_dict = json.loads(args_str)
+        if isinstance(args_dict, dict):
+            # Find and remove keys with None values
+            null_keys = [k for k, v in args_dict.items() if v is None]
+            for k in null_keys:
+                del args_dict[k]
+            return json.dumps(args_dict)
+        return args_str
+    except json.JSONDecodeError:
+        return args_str
+
+
 class GPTRunner(ModelRunner):
-    def __init__(self, args, logger):
-        super().__init__(args, logger)
-        self.model_name = args.model_name
-        self.model = FunctionCallGPT(self.model_name)
+    def __init__(self, model_name, logger, api_key=None, base_url=None, hf_token=None):
+        super().__init__(model_name, logger, api_key, base_url, hf_token)
+        self.model_name = model_name
+        self.model = FunctionCallGPT(model_name, api_key, base_url)
 
     def replace_invalid_chars(self, s):
         valid_pattern = re.compile(r'[a-zA-Z0-9_-]')
@@ -31,6 +50,7 @@ class GPTRunner(ModelRunner):
         if function_call['name'] is None:
             return None
         try:
+            # post_process_optional_params
             function_call['arguments'] = json.loads(tool_call.function.arguments)
         except:
             return None
@@ -114,6 +134,3 @@ class GPTRunner(ModelRunner):
 
             else:
                 return self.return_result(messages, {"error_type": "unknown_error", "content": "llm_response is None"})
-
-
-    
