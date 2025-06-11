@@ -5,6 +5,9 @@ import json
 import logging
 import os
 import random
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
+from multiprocessing import get_context
 
 from runner.claude_runner import ClaudeRunner
 from runner.glm_runner import GLMAPIRunner, GLMRunner
@@ -79,6 +82,12 @@ def get_args():
         type=str,
         default=os.environ.get("HF_TOKEN", None),
         help="The Hugging Face token for accessing models.",
+    )
+    parser.add_argument(
+        "--max-workers",
+        type=int,
+        default=1,
+        help="The maximum number of worker processes to use.",
     )
     parser.add_argument("--exp-name", type=str, default="full-1000")
     parser.add_argument("--vllm-url", type=str)
@@ -186,10 +195,6 @@ def process_example(data, args):
         "resp_eval": resp_eval_result,
     }
 
-    with open(args.output_dir, "a+") as f:
-        f.write(json.dumps(result, ensure_ascii=False) + "\n")
-        f.flush()
-
     return result
 
 
@@ -206,8 +211,14 @@ def main():
         finised_ids = []
     test_data = [d for d in test_data if d["id"] not in finised_ids]
 
-    for data in test_data:
-        process_example(data, args)
+    ctx = get_context("spawn")  # avoids AF_UNIX by not using fork+Manager
+
+    _process_example = partial(process_example, args=args)
+    with ProcessPoolExecutor(max_workers=args.max_workers, mp_context=ctx) as pool:
+        with open(args.output_dir, "w") as f:
+            for result in pool.map(_process_example, test_data):
+                f.write(json.dumps(result, ensure_ascii=False) + "\n")
+                f.flush()
 
 
 if __name__ == "__main__":
