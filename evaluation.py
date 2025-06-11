@@ -90,6 +90,10 @@ def get_args():
         raise ValueError(
             "Hugging Face token is required. Please set the HF_TOKEN environment variable or provide it as an argument."
         )
+    if not args.api_key:
+        args.api_key = "dummy_key"
+    if not args.api_key_evaluator:
+        args.api_key_evaluator = "dummy_key"
 
     os.makedirs(
         f"logs/{datetime.date.today().strftime('%Y-%m-%d')}/{args.model_name}",
@@ -195,7 +199,7 @@ def main():
     else:
         finised_ids = []
     test_data = [d for d in test_data if d["id"] not in finised_ids]
-    
+
     for data in test_data:
         process_example(data, args)
 
