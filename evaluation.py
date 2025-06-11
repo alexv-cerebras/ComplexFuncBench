@@ -90,20 +90,26 @@ def get_args():
         raise ValueError(
             "Hugging Face token is required. Please set the HF_TOKEN environment variable or provide it as an argument."
         )
-    if not args.api_key:
-        args.api_key = "dummy_key"
-    if not args.api_key_evaluator:
-        args.api_key_evaluator = "dummy_key"
 
+    if args.base_url and not args.base_url.endswith("/v1"):
+        args.base_url = f"{args.base_url}/v1"
+
+    if args.base_url_evaluator and not args.base_url_evaluator.endswith("/v1"):
+        args.base_url_evaluator = f"{args.base_url_evaluator}/v1"
+
+    dir_name = os.path.dirname(__file__)
     os.makedirs(
-        f"logs/{datetime.date.today().strftime('%Y-%m-%d')}/{args.model_name}",
+        f"{dir_name}/logs/{datetime.date.today().strftime('%Y-%m-%d')}/{args.model_name}",
         exist_ok=True,
     )
-    os.makedirs(f"result/{args.model_name}/{args.exp_name}/logs", exist_ok=True)
 
-    args.log_dir = f"logs/{datetime.date.today().strftime('%Y-%m-%d')}/{args.model_name}/{args.exp_name}.log"
-    args.output_dir = f"result/{args.model_name}/{args.exp_name}.jsonl"
-    args.log_dir = f"result/{args.model_name}/{args.exp_name}/logs"
+    os.makedirs(
+        f"{dir_name}/result/{args.model_name}/{args.exp_name}/logs", exist_ok=True
+    )
+
+    args.log_dir = f"{dir_name}/logs/{datetime.date.today().strftime('%Y-%m-%d')}/{args.model_name}/{args.exp_name}.log"
+    args.output_dir = f"{dir_name}/result/{args.model_name}/{args.exp_name}.jsonl"
+    args.log_dir = f"{dir_name}/result/{args.model_name}/{args.exp_name}/logs"
     return args
 
 
