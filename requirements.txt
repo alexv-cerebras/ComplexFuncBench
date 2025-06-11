@@ -1,5 +1,5 @@
 anthropic==0.53.0
-zhipuai==2.1.5
+zhipuai==2.1.5.20250526
 mistralai==1.8.2
 numpy==2.2.0
 openai==1.86.0

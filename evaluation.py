@@ -3,11 +3,8 @@ import argparse
 import datetime
 import json
 import logging
-import multiprocessing
 import os
 import random
-from functools import partial
-from multiprocessing import Manager, Pool
 
 from runner.claude_runner import ClaudeRunner
 from runner.glm_runner import GLMAPIRunner, GLMRunner
@@ -85,7 +82,6 @@ def get_args():
     )
     parser.add_argument("--exp-name", type=str, default="full-1000")
     parser.add_argument("--vllm-url", type=str)
-    parser.add_argument("--proc-num", type=int, default=1)
     parser.add_argument("--debug", action="store_true")
 
     args = parser.parse_args()
@@ -199,18 +195,10 @@ def main():
     else:
         finised_ids = []
     test_data = [d for d in test_data if d["id"] not in finised_ids]
-
-    with Manager() as manager:
-        pool = Pool(processes=args.proc_num)
-        process_example_partial = partial(process_example)
-        results = pool.starmap(
-            process_example_partial, [(data, args) for data in test_data]
-        )
-
-    pool.close()
-    pool.join()
+    
+    for data in test_data:
+        process_example(data, args)
 
 
 if __name__ == "__main__":
-    multiprocessing.set_start_method("spawn")
     main()
