@@ -89,6 +89,11 @@ def get_args():
         default=1,
         help="The maximum number of worker processes to use.",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Whether to use strict mode for function calls.",
+    )
     parser.add_argument("--exp-name", type=str, default="full-1000")
     parser.add_argument("--vllm-url", type=str)
     parser.add_argument("--debug", action="store_true")
@@ -134,6 +139,7 @@ def process_example(data, args):
             api_key=args.api_key,
             base_url=args.base_url,
             hf_token=args.hf_token,
+            strict=args.strict
         )
     else:
         model = MODEL_MAPPING[args.model_name](

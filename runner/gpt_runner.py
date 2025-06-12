@@ -25,10 +25,10 @@ def post_process_optional_params(args_str: str) -> str:
 
 
 class GPTRunner(ModelRunner):
-    def __init__(self, model_name, logger, api_key=None, base_url=None, hf_token=None):
+    def __init__(self, model_name, logger, api_key=None, base_url=None, hf_token=None, **kwargs):
         super().__init__(model_name, logger, api_key, base_url, hf_token)
         self.model_name = model_name
-        self.model = FunctionCallGPT(model_name, api_key, base_url)
+        self.model = FunctionCallGPT(model_name, api_key, base_url, **kwargs)
 
     def replace_invalid_chars(self, s):
         valid_pattern = re.compile(r'[a-zA-Z0-9_-]')

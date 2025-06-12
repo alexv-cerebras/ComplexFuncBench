@@ -83,9 +83,10 @@ class GPTModel:
 
 
 class FunctionCallGPT(GPTModel):
-    def __init__(self, model_name, api_key=None, base_url=None):
+    def __init__(self, model_name, api_key=None, base_url=None, **kwargs):
         super().__init__(model_name, api_key, base_url)
         self.messages = []
+        self.strict = kwargs.get("strict", True)
 
     @retry(max_attempts=5, delay=10)
     def __call__(self, messages, tools=None, **kwargs: Any):
@@ -99,7 +100,7 @@ class FunctionCallGPT(GPTModel):
                 recursively_set_additional_properties_false(
                     tool["function"]["parameters"]
                 )
-                tool["function"]["strict"] = True
+                tool["function"]["strict"] = self.strict
 
         try:
             completion = self.client.chat.completions.create(
